@@ -1,0 +1,122 @@
+<!DOCTYPE html>
+<html lang="vi" data-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bản Đồ Số Du Lịch & Lưu Trú Hội An - Smart Edition</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <!-- Thanh tiêu đề chuyên nghiệp -->
+  <header class="topbar">
+    <div class="brand">
+      <div class="brand-mark">🏨</div>
+      <div>
+        <p class="eyebrow">SMART TOURISM MAP</p>
+        <h1>Hệ thống lưu trú Hội An</h1>
+      </div>
+    </div>
+    <div class="topbar-actions">
+      <button class="icon-button" id="themeToggleBtn" title="Chuyển đổi Sáng/Tối">☀️</button>
+      <button class="outline-button" id="resetViewButton">Về trung tâm</button>
+    </div>
+  </header>
+
+  <main class="app-shell">
+    <!-- Khung bản đồ tương tác -->
+    <section class="map-panel">
+      <div id="map" aria-label="Bản đồ lưu trú Hội An"></div>
+      
+      <div class="map-overlay map-title-card">
+        <p class="eyebrow">HỘI AN · ĐÀ NẴNG</p>
+        <h2>Quần thể lưu trú cao cấp</h2>
+        <p>Lọc thông minh theo số người, cảnh quan và mức tài chính cá nhân.</p>
+      </div>
+    </section>
+
+    <!-- Sidebar thông minh & danh sách địa điểm -->
+    <aside class="sidebar">
+      <div class="sidebar-head">
+        <div>
+          <p class="eyebrow">BỘ LỌC THÔNG MINH</p>
+          <h2>Gợi ý hành trình</h2>
+        </div>
+        <span class="result-count" id="resultCount">22 điểm</span>
+      </div>
+
+      <!-- BẢNG LỰA CHỌN THÔNG MINH (SỐ NGƯỜI, CẢNH ĐẸP, TÀI CHÍNH) -->
+      <div class="smart-planner-box">
+        <div class="planner-group">
+          <label>👥 Số lượng người đi</label>
+          <select id="travelersSelect" class="filter-select">
+            <option value="all">Tất cả quy mô</option>
+            <option value="solo">Đi 1 người (Đơn/Cặp đôi)</option>
+            <option value="group">Nhóm đông / Gia đình</option>
+          </select>
+        </div>
+
+        <div class="planner-group">
+          <label>🌿 Mục đích & Cảnh đẹp ưu tiên</label>
+          <select id="vibeSelect" class="filter-select">
+            <option value="all">Mọi trải nghiệm</option>
+            <option value="scenic">Cảnh đẹp thiên nhiên / Ven sông / Biển</option>
+            <option value="culture">Gần phố cổ / Trải nghiệm văn hóa</option>
+            <option value="luxury">Nghỉ dưỡng sang trọng / Yên tĩnh</option>
+          </select>
+        </div>
+
+        <div class="planner-group">
+          <label>💰 Hạn mức tài chính dự kiến</label>
+          <select id="budgetSelect" class="filter-select">
+            <option value="all">Mọi mức tài chính</option>
+            <option value="economy">Tiết kiệm (Dưới 1.5 triệu / đêm)</option>
+            <option value="mid">Tầm trung (1.5 - 3.5 triệu / đêm)</option>
+            <option value="luxury">Cao cấp / Sang trọng (> 3.5 triệu / đêm)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Ô tìm kiếm tên -->
+      <div class="search-wrap">
+        <span>🔍</span>
+        <input id="searchInput" type="search" placeholder="Nhập tên khách sạn hoặc resort...">
+      </div>
+
+      <!-- Danh sách card địa điểm -->
+      <div class="place-list" id="placeList"></div>
+    </aside>
+  </main>
+
+  <!-- Modal thông tin chi tiết & Đặt xe Grab / Xanh SM -->
+  <div class="modal-backdrop" id="detailModal">
+    <div class="modal-card">
+      <button class="modal-close" id="closeModal">✕</button>
+      <div class="modal-badge-tag" id="modalGroup">Khách sạn 5 sao</div>
+      <h2 id="modalTitle">Tên địa điểm</h2>
+      <p class="modal-type-area" id="modalMeta">Loại hình · Khu vực</p>
+      
+      <div class="modal-desc-box">
+        <h4>Thông tin dịch vụ & Đánh giá tài chính</h4>
+        <p id="modalDesc">Đang cập nhật thông tin chi tiết...</p>
+        <p id="modalPriceTag" style="margin-top: 8px; font-weight: 700; color: #3b82f6;"></p>
+      </div>
+
+      <div class="modal-actions">
+        <a href="#" id="modalMapLink" target="_blank" rel="noopener" class="btn-primary">Mở xem trên Google Maps ↗</a>
+        <div class="ride-buttons">
+          <a href="#" id="grabLink" target="_blank" rel="noopener" class="btn-ride btn-grab">🚗 Đặt xe Grab</a>
+          <a href="#" id="xanhsmLink" target="_blank" rel="noopener" class="btn-ride btn-xanhsm">🚙 Đặt xe Xanh SM</a>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
